@@ -70,11 +70,11 @@ class Running(Training):
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
+    CALORIES_WEIGHT_MULPTIPLIER = 0.035
+    CALORIES_WEIGHT_MULPTIPLIER_2 = 0.029
+    CALORIES_MEAN_SPEED_MULTIPLIER = 0.278
     HEIGHT_SM = 100  # Метр роста в сантиметрах.
     MINUTES: int = 60  # Количество минут в одном часе.
-    KOEFF_1 = 0.035
-    KOEFF_2 = 0.029
-    KOEFF_3 = 0.278
 
     def __init__(self, action: int, duration: float,
                  weight: float, height) -> None:
@@ -83,21 +83,21 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Рассчитать потраченные калории."""
-        return (self.KOEFF_1 * self.weight
-                + ((Training.get_mean_speed(self)
-                    * self.KOEFF_3) ** 2
+        return (self.CALORIES_WEIGHT_MULTIPLIER * self.weight
+                + ((self.get_mean_speed()
+                    * self.CALORIES_MEAN_SPEED_MULTIPLIER) ** 2
                     / (self.height / self.HEIGHT_SM)
-                    * self.KOEFF_2 * self.weight)
-                * (self.duration * self.MINUTES))
+                    * self.CALORIES_WEIGHT_MULPTIPLIER_2
+                    * self.weight) * (self.duration * self.MINUTES))
 
 
 class Swimming(Training):
     """Тренировка: плавание."""
+    CALORIES_MEAN_SPEED_MULTIPLER = 1.1
+    CALORIES_WEIGHT_MULTIPLIER = 2
+    HEIGHT_SM = 100  # Количество сантиметров в одном метре роста.
     LEN_STEP = 1.38  # Длина одного гребка.
     M_IN_KM = 1000  # Количество метров в одном километре.
-    HEIGHT_SM = 100  # Количество сантиметров в одном метре роста.
-    SWIM_K_1 = 1.1
-    SWIM_K_2 = 2
 
     def __init__(self, action: int, duration: float, weight: float,
                  length_pool, count_pool) -> None:
@@ -112,8 +112,9 @@ class Swimming(Training):
 
     def get_spent_calories(self) -> float:
         """Рассчитать потраченные калории."""
-        return ((Training.get_mean_speed(self) + self.SWIM_K_1)
-                * self.SWIM_K_2 * self.weight * self.duration)
+        return ((self.get_mean_speed() + self.CALORIES_MEAN_SPEED_MULTIPLER)
+                * self.CALORIES_WEIGHT_MULTIPLIER
+                * self.weight * self.duration)
 
 
 def read_package(workout_type: str, data: list) -> Training:
@@ -123,8 +124,7 @@ def read_package(workout_type: str, data: list) -> Training:
         'RUN': Running,
         'WLK': SportsWalking
     }
-    training = training_type[workout_type](*data)
-    return training
+    return training_type[workout_type](*data)
 
 
 def main(training: Training) -> None:
