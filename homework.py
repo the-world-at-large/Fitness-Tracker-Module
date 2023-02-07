@@ -1,8 +1,12 @@
+
 class InfoMessage():
     """Информационное сообщение о тренировке."""
-
-    def __init__(self, training_type: str, duration: float,
-                 distance: float, speed: float, calories: float):
+    def __init__(self,
+                 training_type: str,
+                 duration: float,
+                 distance: float,
+                 speed: float,
+                 calories: float):
         self.training_type: str = training_type
         self.duration: float = duration
         self.distance: float = distance
@@ -10,8 +14,7 @@ class InfoMessage():
         self.calories: float = calories
 
     def get_message(self) -> str:
-        """Печать результатов тренировки."""
-
+        "Печать результатов тренировки"
         return (f'Тип тренировки: {self.training_type}; '
                 f'Длительность: {self.duration:.3f} ч.; '
                 f'Дистанция: {self.distance:.3f} км; '
@@ -23,7 +26,7 @@ class Training:
     """Базовый класс тренировки."""
     LEN_STEP: float = 0.65  # Длина одного шага.
     M_IN_KM: int = 1000  # Количество метров в одном километре.
-    MINUTES: int = 60  # Количество минут в одном часе.
+    HOUR_MINUTES: int = 60  # Количество минут в одном часе.
 
     def __init__(self,
                  action: int,
@@ -65,17 +68,15 @@ class Running(Training):
 
     CALORIES_MEAN_SPEED_MULTIPLIER: float = 18
     CALORIES_MEAN_SPEED_SHIFT: float = 1.79
-    M_IN_KM: int = 1000  # Количество метров в одном километре.
-    MINUTES: int = 60  # Количество минут в одном часе.
 
     def get_spent_calories(self) -> float:
         """Рассчитать потраченные калории
         для тренировки <Бег>."""
 
-        duration_in_min = self.duration * self.MINUTES
+        duration_in_min = self.duration * self.HOUR_MINUTES
         return ((self.CALORIES_MEAN_SPEED_MULTIPLIER
-                * self.get_mean_speed()
-                + self.CALORIES_MEAN_SPEED_SHIFT)
+                 * self.get_mean_speed()
+                 + self.CALORIES_MEAN_SPEED_SHIFT)
                 * self.weight / self.M_IN_KM * duration_in_min)
 
 
@@ -86,9 +87,9 @@ class SportsWalking(Training):
     CALORIES_WEIGHT_MULTIPLIER_2: float = 0.029
     KMH_IN_MSEC: float = 0.278  # Преобразование км/ч в м/с.
     HEIGHT_SM: int = 100  # Метр роста в сантиметрах.
-    MINUTES: int = 60  # Количество минут в одном часе.
 
-    def __init__(self, action: int,
+    def __init__(self,
+                 action: int,
                  duration: float,
                  weight: float,
                  height: int) -> None:
@@ -99,7 +100,7 @@ class SportsWalking(Training):
         """Рассчитать потраченные калории
         для тренировки <Спортивная ходьба>."""
 
-        duration_in_min = self.duration * self.MINUTES
+        duration_in_min = self.duration * self.HOUR_MINUTES
         meter_height = self.height / self.HEIGHT_SM
         m_sec_speed = (self.get_mean_speed()
                        * self.KMH_IN_MSEC)
@@ -116,9 +117,9 @@ class Swimming(Training):
     CALORIES_MEAN_SPEED_SHIFT: float = 1.1
     CALORIES_WEIGHT_MULTIPLIER: float = 2
     LEN_STEP: float = 1.38  # Длина одного гребка.
-    M_IN_KM: int = 1000  # Количество метров в одном километре.
 
-    def __init__(self, action: int,
+    def __init__(self,
+                 action: int,
                  duration: float,
                  weight: float,
                  length_pool: int,
@@ -146,22 +147,22 @@ class Swimming(Training):
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные, полученные от датчиков."""
 
-    activity_dict = {
+    activities = {
         'RUN': Running,
         'WLK': SportsWalking,
         'SWM': Swimming
     }
 
-    if workout_type in activity_dict:
-        return activity_dict[workout_type](*data)
+    if workout_type in activities:
+        return activities[workout_type](*data)
     raise ValueError('Указан неверный код тренировки.')
 
 
 def main(training: Training) -> None:
     """Главная функция."""
 
-    info = training.show_training_info()  # Создание экземпляра InfoMessage.
-    print(info.get_message())  # Вызов get_message()
+    info = training.show_training_info()
+    print(info.get_message())
 
 
 if __name__ == '__main__':
